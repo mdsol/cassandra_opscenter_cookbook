@@ -22,11 +22,14 @@ $LEADEREC2PUBLICHOSTNAME = leader.ec2.public_hostname
 log "Opscenter LeaderElection: #{node[:roles].first} Leader is : #{$LEADERNAME} #{$LEADEREC2PUBLICHOSTNAME} #{$LEADERIPADDRESS} "
 
 if (node.name == leader.name)
-  # leader installs both recipes
+  # leader installs the server
   include_recipe "cassandra-opscenter::opscenter-server"
+  # leader installs the agent too
   include_recipe "cassandra-opscenter::opscenter-agent"
 else 
-  # followers install just the agent recipe
+  # followers install the agent 
   include_recipe "cassandra-opscenter::opscenter-agent"
+  # and shuts down previous instances of the server - saving memory, etc
+  include_recipe "cassandra-opscenter::opscenter-server-shutdown"
 end
 

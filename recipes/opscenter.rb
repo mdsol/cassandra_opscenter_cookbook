@@ -5,6 +5,8 @@ package "sysstat"
 # required for opscenter agent connectivity
 package "libssl0.9.8"
 
+node.save
+
 # A simplistic leadership election
 # This search returns all other nodes sharing the unique? role
 peers = search(:node, "roles:#{node[:roles].first}" )

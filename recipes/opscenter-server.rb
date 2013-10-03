@@ -44,13 +44,23 @@ template "#{node[:cassandra][:opscenter_home]}/conf/opscenterd.conf" do
   mode      "0640"
 end
 
-# start it up
+# Start it up
 execute "Start Datastax OpsCenter" do
   command   "#{node[:cassandra][:opscenter_home]}/bin/opscenter"
   user      "#{node[:cassandra][:user]}"
   group     "#{node[:tomcat][:user]}"
   cwd       node[:cassandra][:opscenter_home]
   not_if    "pgrep -f start_opscenter.py"
+  notifies :run, "bash[Short Delay for Opscenter Server Startup"]", :immediately
+end
+
+# We cause a delay after startup so that the agent.tar.gz can be created and permissions set afterwards
+bash "Short Delay for Opscenter Server Startup" do
+  code <<-EOH
+  sleep 15
+  EOH
+  action :nothing
+  not_if { ::File.exists?("#{node[:cassandra][:opscenter_home]}/agent.tar.gz") }
 end
 
 # set nginx-readable permissions on agent.tar.gz

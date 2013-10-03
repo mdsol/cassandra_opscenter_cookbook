@@ -9,7 +9,7 @@ remote_file "#{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{n
   mode "0644"
   action :create_if_missing
   retries 40
-  retry_delay 10
+  retry_delay 1
   notifies :run, "bash[Opscenter Agent Installation]", :immediately
 end
 

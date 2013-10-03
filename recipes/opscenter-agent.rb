@@ -2,12 +2,15 @@ log "Installing Opscenter Agent"
 
 # Install Agent
 
-# Download Agent from Leader
+# Download Agent from Leader - the leader may take a while to generate the agent.tar.gz at install time, so we give it up to 40 tries to do it.
 log "Downloading Agent from http://#{$LEADERIPADDRESS}/agent.tar.gz"
 remote_file "#{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz" do
   source "http://#{$LEADERIPADDRESS}/agent.tar.gz"
   mode "0644"
   action :create_if_missing
+  retries 40
+  retry_delay 10
+  notifies :run, "bash[Opscenter Agent Installation]", :immediately
 end
 
 # Install the Agent according to the Documentation - but clear out the old address.yaml in case there is an update, in case the server changed.

@@ -1,7 +1,7 @@
 Description
 ===========
 
-This cookbook exists to make a deployment of a Datastax Opscenter cluster on a Cassandra cluster.
+This cookbook exists to make a deployment of a [Datastax Opscenter][1] cluster on a Cassandra cluster.
 
 [1]: http://planetcassandra.org/Download/DataStaxCommunityEdition
 
@@ -35,7 +35,7 @@ Include cassandra-opscenter in your runlist.
 Development
 ===========
 
-See github [2]
+See the [Github page][2]
 
 [2]: https://github.com/mdsol/cassandra_opscenter_cookbook
 

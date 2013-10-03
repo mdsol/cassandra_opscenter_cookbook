@@ -67,7 +67,7 @@ include_recipe "nginx_proxy"
 # Provide access to the agent.tar.gz on the leader via http/https
 rewind :template => "/etc/nginx/sites-available/nginx_proxy" do
   source "nginx_proxy.erb"
-  cookbook_name "cassandra-priam" 
+  cookbook_name "cassandra-opscenter" 
 end
 
 # make sure we start nginx mid-run

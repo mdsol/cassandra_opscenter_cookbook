@@ -51,7 +51,7 @@ execute "Start Datastax OpsCenter" do
   group     "#{node[:tomcat][:user]}"
   cwd       node[:cassandra][:opscenter_home]
   not_if    "pgrep -f start_opscenter.py"
-  notifies :run, "bash[Short Delay for Opscenter Server Startup"]", :immediately
+  notifies :run, "bash[Short Delay for Opscenter Server Startup]", :immediately
 end
 
 # We cause a delay after startup so that the agent.tar.gz can be created and permissions set afterwards

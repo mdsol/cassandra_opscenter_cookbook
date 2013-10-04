@@ -8,8 +8,7 @@ remote_file "#{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{n
   source "http://#{$LEADERIPADDRESS}/agent.tar.gz"
   action :create_if_missing
   mode "0644"
-  retries 40
-  retry_delay 1
+  retries 10
   notifies :run, "bash[Opscenter Agent Installation]", :immediately
 end
 

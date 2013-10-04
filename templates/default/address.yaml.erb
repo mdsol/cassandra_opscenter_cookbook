@@ -1,2 +1,5 @@
 stomp_interface: "<%= @LEADEREC2PUBLICHOSTNAME %>"
+local_interface: "<%= node[:cloud][:public_ipv4] %>"
+local_interface: "<%= node[:ipaddress] %>"
+agent_rpc_broadcast_address: "<%= node[:cloud][:public_ipv4] %>"
 use_ssl: 1

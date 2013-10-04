@@ -90,5 +90,5 @@ bash "Long Delay for Opscenter Agent Installation" do
   code <<-EOH
   sleep 300
   EOH
-  not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADERIPADDRESS} /var/lib/opscenter-agent/conf/address.yaml"
+  not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADEREC2PUBLICHOSTNAME} /var/lib/opscenter-agent/conf/address.yaml"
 end

@@ -26,7 +26,6 @@ template "/var/lib/opscenter-agent/conf/address.yaml" do
   variables :LEADEREC2PUBLICHOSTNAME => $LEADEREC2PUBLICHOSTNAME
   source "address.yaml.erb"
   mode      "0644"
-  action :nothing
   notifies :restart, "service[opscenter-agent]", :immediately
 end
 

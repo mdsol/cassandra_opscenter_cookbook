@@ -16,18 +16,10 @@ end
 # Install the Agent according to the Documentation - but clear out the old address.yaml in case there is an update, in case the server changed.
 bash "Opscenter Agent Installation" do
   code <<-EOH
-  cd /tmp/
-  tar zxvf #{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz
-  cd agent
-  ./bin/install_agent.sh opscenter-agent.deb #{$LEADERIPADDRESS}
+  cd /tmp/ && tar zxvf #{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz && cd agent && ./bin/install_agent.sh opscenter-agent.deb #{$LEADERIPADDRESS}
   EOH
   not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADERIPADDRESS} /var/lib/opscenter-agent/conf/address.yaml"
-end
-
-# Delete the downloaded file if we failed to install it
-file "#{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz" do
-  action :delete
-  not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADERIPADDRESS} /var/lib/opscenter-agent/conf/address.yaml"
+  notifies :create, "template[/var/lib/opscenter-agent/conf/address.yaml]", :immediately
 end
 
 # Opscenter Agent configuration - we force ssl to be true
@@ -35,10 +27,17 @@ template "/var/lib/opscenter-agent/conf/address.yaml" do
   variables :LEADERIPADDRESS => $LEADERIPADDRESS
   source "address.yaml.erb"
   mode      "0644"
+  action :nothing
   notifies :restart, "service[opscenter-agent]", :immediately
 end
 
-# The install script starts it but we force it anyway here
+# Delete the downloaded file if we didn't manage to install it - it is safer to download again and try again
+file "#{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz" do
+  action :delete
+  not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADERIPADDRESS} /var/lib/opscenter-agent/conf/address.yaml"
+end
+
+# We use the opscenter-agent service resource so it must be specified somewhere.
 service "opscenter-agent" do
   action :start
 end

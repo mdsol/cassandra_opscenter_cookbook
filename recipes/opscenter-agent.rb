@@ -6,8 +6,8 @@ log "Installing Opscenter Agent"
 log "Downloading Agent from http://#{$LEADERIPADDRESS}/agent.tar.gz"
 remote_file "#{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz" do
   source "http://#{$LEADERIPADDRESS}/agent.tar.gz"
-  mode "0644"
   action :create_if_missing
+  mode "0644"
   retries 40
   retry_delay 1
   notifies :run, "bash[Opscenter Agent Installation]", :immediately
@@ -24,7 +24,13 @@ bash "Opscenter Agent Installation" do
   not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADERIPADDRESS} /var/lib/opscenter-agent/conf/address.yaml"
 end
 
-# opscenter server configuration
+# Delete the downloaded file if we failed to install it
+file "#{Chef::Config[:file_cache_path]}/#{$LEADERIPADDRESS}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz" do
+  action :delete
+  not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADERIPADDRESS} /var/lib/opscenter-agent/conf/address.yaml"
+end
+
+# Opscenter Agent configuration - we force ssl to be true
 template "/var/lib/opscenter-agent/conf/address.yaml" do
   variables :LEADERIPADDRESS => $LEADERIPADDRESS
   source "address.yaml.erb"

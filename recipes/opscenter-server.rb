@@ -85,7 +85,7 @@ service "nginx" do
   action [ :enable, :start ]
 end
 
-# We cause a longer delay because other nodes will be picking up the agent file and we do not want any delayed restarts of nginx to cut the download in half. remote_file isn't very smart.
+# We cause a longer delay because other nodes will be picking up the agent file and we do not want any delayed restarts of nginx to cut the downloads in half. remote_file isn't very smart.
 bash "Long Delay for Opscenter Agent Installation" do
   code <<-EOH
   sleep 300

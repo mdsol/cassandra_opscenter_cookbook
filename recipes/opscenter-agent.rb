@@ -21,12 +21,21 @@ bash "Opscenter Agent Installation" do
   notifies :create, "template[/var/lib/opscenter-agent/conf/address.yaml]", :immediately
 end
 
-# Opscenter Agent configuration - we force ssl to be true
-template "/var/lib/opscenter-agent/conf/address.yaml" do
-  variables :LEADEREC2PUBLICHOSTNAME => $LEADEREC2PUBLICHOSTNAME
-  source "address.yaml.erb"
-  mode      "0644"
-  notifies :restart, "service[opscenter-agent]", :immediately
+# Opscenter Agent configuration - differs between single and multi region setups
+if node[:cassandra][:multiregion] == "true"
+  template "/var/lib/opscenter-agent/conf/address.yaml" do
+    variables :LEADEREC2PUBLICHOSTNAME => $LEADEREC2PUBLICHOSTNAME
+    source "multiregion-address.yaml.erb"
+    mode      "0644"
+    notifies :restart, "service[opscenter-agent]", :immediately
+  end
+elsif node[:cassandra][:multiregion] == "false"
+  template "/var/lib/opscenter-agent/conf/address.yaml" do
+    variables :LEADEREC2PUBLICHOSTNAME => $LEADEREC2PUBLICHOSTNAME
+    source "singleregion-address.yaml.erb"
+    mode      "0644"
+    notifies :restart, "service[opscenter-agent]", :immediately
+  end
 end
 
 # Delete the downloaded file if we didn't manage to install it - it is safer to download again and try again

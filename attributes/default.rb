@@ -1,3 +1,7 @@
+# multi region switch variable - switching to true or false sets priam variables - we default to single region i.e. false
+# ( in this cookbook the agent config is different depending on this variable )
+default[:cassandra][:multiregion] = "false"
+
 default[:cassandra][:parentdir] = "/opt"
 default[:cassandra][:opscenter_home] = "#{node[:cassandra][:parentdir]}/opscenter"
 default[:cassandra][:opscenter][:version] = "3.2.2"
@@ -6,6 +10,6 @@ default[:cassandra][:opscenter][:checksum] = "568b9e8767a0ed1bc7f101f39cf400f63f
 
 # for agent distribution and proxying/redirect to the opscenter interface on the default http port
 include_attribute "nginx_proxy"
-node[:nginx_proxy][:http_port] = 8888
-node[:nginx_proxy][:https_port] = 8888
-node[:nginx_proxy][:target_host] = "#{node[:ipaddress]}"
+node.set[:nginx_proxy][:http_port] = 8888
+node.set[:nginx_proxy][:https_port] = 8888
+node.set[:nginx_proxy][:target_host] = "#{node[:ipaddress]}"

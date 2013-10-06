@@ -1,1 +1,1 @@
-include_recipe "cassandra-opscenter::opscenter"
+include_recipe "cassandra-opscenter::install"

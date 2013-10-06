@@ -5,24 +5,21 @@ package "sysstat"
 # required for opscenter agent connectivity
 package "libssl0.9.8"
 
+## Simplistic leader election
 node.save
-
-# A simplistic leadership election
-# This search returns all other nodes sharing the unique? role
 peers = search(:node, "roles:#{node[:roles].first}" )
-# Leader is elected based on lowest numeric hostname
-leader = peers.sort{|a,b| a.name <=> b.name}.first
+leader = peers.sort{|a,b| a.uptime <=> b.uptime}.last
+
+# Some reporting on the election
+log "cassandra-opscenter LeaderElection: #{node[:roles].first} Leader is : #{$LEADERNAME} #{$LEADEREC2PUBLICHOSTNAME} #{$LEADERIPADDRESS} "
 
 # set some global vars to be used by this and the agent recipe
 $LEADERNAME = leader.name
 $LEADERIPADDRESS = leader.ipaddress
 $LEADEREC2PUBLICHOSTNAME = leader.ec2.public_hostname
 
-# Some reporting on the election
-log "Opscenter LeaderElection: #{node[:roles].first} Leader is : #{$LEADERNAME} #{$LEADEREC2PUBLICHOSTNAME} #{$LEADERIPADDRESS} "
-
 if (node.name == leader.name)
-  # leader installs the server
+  # leader installs the server - it is the Master
   include_recipe "cassandra-opscenter::opscenter-server"
   # leader installs the agent too
   include_recipe "cassandra-opscenter::opscenter-agent"

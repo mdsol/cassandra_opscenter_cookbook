@@ -11,7 +11,7 @@ peers = search(:node, "roles:#{node[:roles].first}" )
 leader = peers.sort{|a,b| a.uptime_seconds <=> b.uptime_seconds}.last || node    # the "or" covers the case where node is the first db
 
 # Some reporting on the election
-log "cassandra-opscenter LeaderElection: #{node[:roles].first} Leader is : #{$LEADERNAME} #{$LEADEREC2PUBLICHOSTNAME} #{$LEADERIPADDRESS} "
+log "cassandra-opscenter LeaderElection: #{node[:roles].first} Leader is : #{leader.name} #{leader.ec2.public_hostname} #{leader.ipaddress}"
 
 # set some global vars to be used by this and the agent recipe
 $LEADERNAME = leader.name

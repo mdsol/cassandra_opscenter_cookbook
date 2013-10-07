@@ -10,7 +10,7 @@ remote_file local_archive do
   checksum node[:cassandra][:opscenter][:checksum]
 end
 
-VERSION_DIR = "#{node[:cassandra][:opscenter_home]}-#{node[:cassandra][:opscenter][:version]}"
+VERSION_DIR = "#{node[:cassandra][:opscenter][:home]}-#{node[:cassandra][:opscenter][:version]}"
 
 # create the target directory
 directory VERSION_DIR do
@@ -30,14 +30,14 @@ execute "unpack #{local_archive}" do
 end
 
 # link the opscenter_home to the version directory
-link node[:cassandra][:opscenter_home] do
+link node[:cassandra][:opscenter][:home] do
   to        VERSION_DIR
   owner     "#{node[:cassandra][:user]}"
   group     "#{node[:tomcat][:user]}"
 end
 
 # opscenter server configuration
-template "#{node[:cassandra][:opscenter_home]}/conf/opscenterd.conf" do
+template "#{node[:cassandra][:opscenter][:home]}/conf/opscenterd.conf" do
   source "opscenterd.conf.erb"
   owner     "#{node[:cassandra][:user]}"
   group     "#{node[:tomcat][:user]}"
@@ -46,10 +46,10 @@ end
 
 # Start it up
 execute "Start Datastax OpsCenter" do
-  command   "#{node[:cassandra][:opscenter_home]}/bin/opscenter"
+  command   "#{node[:cassandra][:opscenter][:home]}/bin/opscenter"
   user      "#{node[:cassandra][:user]}"
   group     "#{node[:tomcat][:user]}"
-  cwd       node[:cassandra][:opscenter_home]
+  cwd       node[:cassandra][:opscenter][:home]
   not_if    "pgrep -f start_opscenter.py"
   notifies :run, "bash[Short Delay for Opscenter Server Startup]", :immediately
 end
@@ -60,22 +60,22 @@ bash "Short Delay for Opscenter Server Startup" do
   sleep 15
   EOH
   action :nothing
-  not_if { ::File.exists?("#{node[:cassandra][:opscenter_home]}/agent.tar.gz") }
+  not_if { ::File.exists?("#{node[:cassandra][:opscenter][:home]}/agent.tar.gz") }
 end
 
 # set nginx-readable permissions on agent.tar.gz
-file "#{node[:cassandra][:opscenter_home]}/agent.tar.gz" do
+file "#{node[:cassandra][:opscenter][:home]}/agent.tar.gz" do
   owner     "#{node[:cassandra][:user]}"
   group     "#{node[:tomcat][:user]}"
   mode      0644
-  only_if  { ::File.exists?("#{node[:cassandra][:opscenter_home]}/agent.tar.gz") }
+  only_if  { ::File.exists?("#{node[:cassandra][:opscenter][:home]}/agent.tar.gz") }
   notifies :create, "ruby_block[Save Opscenter Agent Checksum]", :immediately
 end
 
 ruby_block "Save Opscenter Agent Checksum" do
   block do
     # We create a hash in our node data and save the node data - the agent installation recipe will use this hash to verify the download.
-    node.set[:cassandra][:opscenter][:agent][:checksum] = Digest::SHA256.file("#{node[:cassandra][:opscenter_home]}/agent.tar.gz").hexdigest
+    node.set[:cassandra][:opscenter][:agent][:checksum] = Digest::SHA256.file("#{node[:cassandra][:opscenter][:home]}/agent.tar.gz").hexdigest
     node.save
   end
   action :nothing

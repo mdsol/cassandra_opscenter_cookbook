@@ -13,10 +13,11 @@ leader = peers.sort{|a,b| a.uptime_seconds <=> b.uptime_seconds}.last || node   
 # Some reporting on the election
 log "cassandra-opscenter LeaderElection: #{node[:roles].first} Leader is : #{leader.name} #{leader.ec2.public_hostname} #{leader.ipaddress}"
 
-# set some global vars to be used by this and the agent recipe
+# set some global vars to be used in the agent recipe
 $LEADERNAME = leader.name
 $LEADERIPADDRESS = leader.ipaddress
 $LEADEREC2PUBLICHOSTNAME = leader.ec2.public_hostname
+$LEADERAGENTCHECKSUM = leader.cassandra.opscenter.agent.checksum
 
 if (node.name == leader.name)
   # leader installs the server - it is the Master

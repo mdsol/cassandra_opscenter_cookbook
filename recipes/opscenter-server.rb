@@ -57,7 +57,7 @@ end
 # We cause a delay after startup so that the agent.tar.gz can be created and permissions set afterwards
 bash "Short Delay for Opscenter Server Startup" do
   code <<-EOH
-  sleep 20
+  sleep 15
   EOH
   action :nothing
   not_if { ::File.exists?("#{node[:cassandra][:opscenter_home]}/agent.tar.gz") }
@@ -69,7 +69,19 @@ file "#{node[:cassandra][:opscenter_home]}/agent.tar.gz" do
   group     "#{node[:tomcat][:user]}"
   mode      0644
   only_if  { ::File.exists?("#{node[:cassandra][:opscenter_home]}/agent.tar.gz") }
+  notifies :create, "ruby_block[Save Opscenter Agent Checksum]", :immediately
 end
+
+ruby_block "Save Opscenter Agent Checksum" do
+  block do
+    # We create a hash in our node data and save the node data - the agent installation recipe will use this hash to verify the download.
+    node.set[:cassandra][:opscenter][:agent][:checksum] = Digest::SHA256.file("#{node[:cassandra][:opscenter_home]}/agent.tar.gz").hexdigest
+    node.save
+  end
+  action :nothing
+end
+
+# We setup a webserver
 
 # setup nginx
 include_recipe "nginx_proxy"
@@ -83,12 +95,4 @@ end
 # Make sure we start nginx mid-run
 service "nginx" do
   action [ :enable, :start ]
-end
-
-# We cause a longer delay because other nodes will be picking up the agent file and we do not want any delayed restarts of nginx to cut the downloads in half. remote_file isn't very smart.
-bash "Long Delay for Opscenter Agent Installation" do
-  code <<-EOH
-  sleep 300
-  EOH
-  not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADEREC2PUBLICHOSTNAME} /var/lib/opscenter-agent/conf/address.yaml"
 end

@@ -6,9 +6,9 @@ log "Installing Opscenter Agent"
 log "Downloading Agent from http://#{$LEADEREC2PUBLICHOSTNAME}/agent.tar.gz"
 remote_file "#{Chef::Config[:file_cache_path]}/#{$LEADEREC2PUBLICHOSTNAME}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz" do
   source "http://#{$LEADEREC2PUBLICHOSTNAME}/agent.tar.gz"
-  action :create_if_missing
   mode "0644"
   retries 10
+  checksum $LEADERAGENTCHECKSUM
   notifies :run, "bash[Opscenter Agent Installation]", :immediately
 end
 

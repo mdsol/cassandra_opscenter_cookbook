@@ -1,11 +1,15 @@
 # We may lose the election one day. In which case we will stop running the Opscenter Server.
+# Metrics are kept in Cassandra itself so this is strangely safe.
 
-# Stop the server, Remove the linked directory. Metrics are kept in Cassandra itself so this is strangely safe.
-bash "Opscenter Server Shutdown and Delink" do
+# Stop the server
+bash "Opscenter Server Shutdown" do
   code <<-EOH
   pkill -f start_opscenter.py
-  rm -rf #{node[:cassandra][:opscenter_home]}
   EOH
-  only_if { ::File.exists?("#{node[:cassandra][:opscenter_home]}/bin/opscenter") }
+  only_if "pgrep -f start_opscenter.py"
 end
 
+# Delete the link
+link node[:cassandra][:opscenter_home] do
+  action :delete
+end

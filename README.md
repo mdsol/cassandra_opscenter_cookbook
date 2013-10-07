@@ -36,9 +36,9 @@ Nginx cookbook for agent distribution.
 
 ## Platform
 
-* Ubuntu 12.04+
+* Ubuntu 12.04+ [tested heavily.]
 * Probably Debian
-* Probably Redhat
+* Probably RPM-based distros.
 
 Attributes
 ==========

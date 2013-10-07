@@ -38,12 +38,6 @@ elsif node[:cassandra][:multiregion] == "false"
   end
 end
 
-# Delete the downloaded file if we didn't manage to install it - it is safer to download again and try again
-file "#{Chef::Config[:file_cache_path]}/#{$LEADEREC2PUBLICHOSTNAME}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz" do
-  action :delete
-  not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADEREC2PUBLICHOSTNAME} /var/lib/opscenter-agent/conf/address.yaml"
-end
-
 # We use the opscenter-agent service resource so it must be specified somewhere.
 service "opscenter-agent" do
   action :start

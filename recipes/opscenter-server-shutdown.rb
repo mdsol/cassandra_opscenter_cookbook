@@ -10,6 +10,6 @@ bash "Opscenter Server Shutdown" do
 end
 
 # Delete the link
-link node[:cassandra][:opscenter_home] do
+link node[:cassandra][:opscenter][:home] do
   action :delete
 end

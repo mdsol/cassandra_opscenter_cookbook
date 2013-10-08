@@ -1,4 +1,4 @@
-log "Installing Opscenter Agent"
+Chef::Log.info("Installing Opscenter Agent")
 
 # Required for IO reporting
 package "sysstat"
@@ -17,8 +17,8 @@ case node[:platform]
     PACKAGESUFFIX = "rpm"
 end
 
-# Download Agent from Leader - the leader may take a while to generate the agent.tar.gz at install time, so we give it up to 40 tries to do it.
-log "Downloading Agent from http://#{$LEADEREC2PUBLICHOSTNAME}/agent.tar.gz"
+# Download Agent from Leader - the leader may take a while to generate the agent.tar.gz at install time and make it available so we give it some retries to do it.
+Chef::Log.info("Downloading Agent from http://#{$LEADEREC2PUBLICHOSTNAME}/agent.tar.gz")
 remote_file "#{Chef::Config[:file_cache_path]}/#{$LEADEREC2PUBLICHOSTNAME}-opscenter-#{node[:cassandra][:opscenter][:version]}-agent.tar.gz" do
   source "http://#{$LEADEREC2PUBLICHOSTNAME}/agent.tar.gz"
   mode "0644"

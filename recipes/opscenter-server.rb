@@ -1,4 +1,4 @@
-log "Installing Opscenter Server"
+Chef::Log.info("Installing Opscenter Server")
 
 # Install nginx
 include_recipe "nginx"

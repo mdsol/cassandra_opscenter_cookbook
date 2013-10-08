@@ -1,5 +1,14 @@
 log "Installing Opscenter Agent"
 
+# Required for IO reporting
+package "sysstat"
+
+# Required for opscenter agent connectivity
+package "libssl0.9.8"
+
+# Install java
+include_recipe "java"
+
 # Pick a package suffix based on the platform.
 case node[:platform]
   when "debian", "ubuntu"

@@ -1,10 +1,3 @@
-# Two packages needed for the Agent to work - all nodes run the Agent, including the Master, in our case.
-
-# required for IO stat reporting
-package "sysstat"
-# required for opscenter agent connectivity
-package "libssl0.9.8"
-
 ## Simplistic leader election
 node.save
 peers = search(:node, "roles:#{node[:roles].first}" )

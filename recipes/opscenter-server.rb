@@ -95,7 +95,6 @@ ruby_block "Save Opscenter Agent Checksum" do
     node.set[:cassandra][:opscenter][:agent][:checksum] = Digest::SHA256.file("#{node[:cassandra][:opscenter][:home]}/agent.tar.gz").hexdigest
     node.save
   end
-  action :nothing
 end
 
 # Provide access to the agent.tar.gz on the leader via http/https

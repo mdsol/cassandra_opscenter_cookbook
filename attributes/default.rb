@@ -1,9 +1,13 @@
 # Multi region switch variable: in this cookbook the agent config is different depending on this variable.
 default[:cassandra][:multiregion] = "false"
 
+# We will create this user on the leader-elected server.
+default[:cassandra][:opscenter][:user] = "opscenter"
+default[:cassandra][:opscenter][:group] = "opscenter"
+
 # A top level directory attribute is provided should you wish to install elsewhere.
-default[:cassandra][:parentdir] = "/opt"
-default[:cassandra][:opscenter][:home] = "#{node[:cassandra][:parentdir]}/opscenter"
+default[:cassandra][:opscenter][:parentdir] = "/opt"
+default[:cassandra][:opscenter][:home] = "#{node[:cassandra][:opscenter][:parentdir]}/opscenter"
 
 # What version to install, where to get it and a checksum to guarantee it is valid.
 default[:cassandra][:opscenter][:version] = "3.2.2"
@@ -14,7 +18,4 @@ default[:cassandra][:opscenter][:checksum] = "568b9e8767a0ed1bc7f101f39cf400f63f
 default[:cassandra][:opscenter][:agent][:checksum] = nil
 
 # For agent distribution and proxying/redirect to the opscenter interface on the default http port
-include_attribute "nginx_proxy"
-node.set[:nginx_proxy][:http_port] = 8888
-node.set[:nginx_proxy][:https_port] = 8888
-node.set[:nginx_proxy][:target_host] = "#{node[:ipaddress]}"
+default[:cassandra][:opscenter][:server_port] = "8888"

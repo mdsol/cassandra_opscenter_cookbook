@@ -1,5 +1,22 @@
 log "Installing Opscenter Server"
 
+# Install nginx
+include_recipe "nginx"
+
+# Install python
+include_recipe "python"
+
+# Create a group for our opscenter user
+group "#{node[:cassandra][:opscenter][:group]}"
+
+# Create a user.. for our opscenter
+user "#{node[:cassandra][:opscenter][:user]}" do
+  system    true
+  home      node[:cassandra][:opscenter][:home]
+  gid       node[:cassandra][:opscenter][:group]
+  shell     "/bin/sh"
+end
+
 # download source
 src_url = node[:cassandra][:opscenter][:src_url]
 local_archive = "#{Chef::Config[:file_cache_path]}/#{::File.basename src_url}"
@@ -14,8 +31,8 @@ VERSION_DIR = "#{node[:cassandra][:opscenter][:home]}-#{node[:cassandra][:opscen
 
 # create the target directory
 directory VERSION_DIR do
-  owner     "#{node[:cassandra][:user]}"
-  group     "#{node[:tomcat][:user]}"
+  owner     "#{node[:cassandra][:opscenter][:user]}"
+  group     "#{node[:cassandra][:opscenter][:group]}"
   mode      0775
   recursive true
 end
@@ -24,31 +41,31 @@ end
 execute "unpack #{local_archive}" do
   command   "tar --strip-components 1 --no-same-owner -xzf #{local_archive}"
   creates   "#{VERSION_DIR}/bin/opscenter"
-  user      "#{node[:cassandra][:user]}"
-  group     "#{node[:tomcat][:user]}"
+  user      "#{node[:cassandra][:opscenter][:user]}"
+  group     "#{node[:cassandra][:opscenter][:group]}"
   cwd       VERSION_DIR
 end
 
-# link the opscenter_home to the version directory
+# link the opscenter home to the version directory
 link node[:cassandra][:opscenter][:home] do
   to        VERSION_DIR
-  owner     "#{node[:cassandra][:user]}"
-  group     "#{node[:tomcat][:user]}"
+  owner     "#{node[:cassandra][:opscenter][:user]}"
+  group     "#{node[:cassandra][:opscenter][:group]}"
 end
 
 # opscenter server configuration
 template "#{node[:cassandra][:opscenter][:home]}/conf/opscenterd.conf" do
-  source "opscenterd.conf.erb"
-  owner     "#{node[:cassandra][:user]}"
-  group     "#{node[:tomcat][:user]}"
+  source    "opscenterd.conf.erb"
+  owner     "#{node[:cassandra][:opscenter][:user]}"
+  group     "#{node[:cassandra][:opscenter][:group]}"
   mode      "0640"
 end
 
 # Start it up
 execute "Start Datastax OpsCenter" do
   command   "#{node[:cassandra][:opscenter][:home]}/bin/opscenter"
-  user      "#{node[:cassandra][:user]}"
-  group     "#{node[:tomcat][:user]}"
+  user      "#{node[:cassandra][:opscenter][:user]}"
+  group     "#{node[:cassandra][:opscenter][:group]}"
   cwd       node[:cassandra][:opscenter][:home]
   not_if    "pgrep -f start_opscenter.py"
   notifies :run, "bash[Short Delay for Opscenter Server Startup]", :immediately
@@ -63,36 +80,35 @@ bash "Short Delay for Opscenter Server Startup" do
   not_if { ::File.exists?("#{node[:cassandra][:opscenter][:home]}/agent.tar.gz") }
 end
 
-# set nginx-readable permissions on agent.tar.gz
+# Set everyone-readable permissions on agent.tar.gz so nginx can read it and other nodes can get it.
 file "#{node[:cassandra][:opscenter][:home]}/agent.tar.gz" do
-  owner     "#{node[:cassandra][:user]}"
-  group     "#{node[:tomcat][:user]}"
+  owner     "#{node[:cassandra][:opscenter][:user]}"
+  group     "#{node[:cassandra][:opscenter][:group]}"
   mode      0644
   only_if  { ::File.exists?("#{node[:cassandra][:opscenter][:home]}/agent.tar.gz") }
   notifies :create, "ruby_block[Save Opscenter Agent Checksum]", :immediately
 end
 
+# We create a hash in our node data and save the node data - the agent installation recipe will use this hash to verify the download.
 ruby_block "Save Opscenter Agent Checksum" do
   block do
-    # We create a hash in our node data and save the node data - the agent installation recipe will use this hash to verify the download.
     node.set[:cassandra][:opscenter][:agent][:checksum] = Digest::SHA256.file("#{node[:cassandra][:opscenter][:home]}/agent.tar.gz").hexdigest
     node.save
   end
   action :nothing
 end
 
-# We setup a webserver
-
-# setup nginx
-include_recipe "nginx_proxy"
-
 # Provide access to the agent.tar.gz on the leader via http/https
-rewind :template => "/etc/nginx/sites-available/nginx_proxy" do
-  source "nginx_proxy.erb"
-  cookbook_name "cassandra-opscenter" 
+template "/etc/nginx/sites-available/opscenter" do
+  source "opscenter_nginx_site.erb"
 end
 
-# Make sure we start nginx mid-run
+# Enable the site.
+nginx_site "opscenter" do
+  enable opscenter
+end
+
+# Reload nginx to pick it up.
 service "nginx" do
-  action [ :enable, :start ]
+  action :reload
 end

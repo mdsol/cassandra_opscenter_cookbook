@@ -3,9 +3,9 @@ log "Installing Opscenter Agent"
 # Pick a package suffix based on the platform.
 case node[:platform]
   when "debian", "ubuntu"
-    PACKAGESUFFIX=deb
+    PACKAGESUFFIX = "deb"
   when "redhat", "centos", "fedora", "scientific", "amazon"
-    PACKAGESUFFIX=rpm
+    PACKAGESUFFIX = "rpm"
 end
 
 # Download Agent from Leader - the leader may take a while to generate the agent.tar.gz at install time, so we give it up to 40 tries to do it.

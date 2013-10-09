@@ -3,6 +3,9 @@ Chef::Log.info("Installing Opscenter Server")
 # Install python
 include_recipe "python"
 
+# Required for opscenter server connectivity
+package "libssl0.9.8"
+
 # Create a group for our opscenter user
 group "#{node[:cassandra][:opscenter][:group]}"
 

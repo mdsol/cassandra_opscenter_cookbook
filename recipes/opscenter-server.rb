@@ -94,26 +94,26 @@ ruby_block "Save Opscenter Agent Checksum" do
   end
 end
 
-# Instal nginx - the cookbook would be better.
-package "nginx"
+# Install nginx - the cookbook would be better.
+package "nginx" do
+  notifies :enable, "service[nginx]", :immediately
+end
 
-# Start nginx
+# Start nginx.
 service "nginx" do
   supports :restart => true, :reload => true
   action   :enable
 end
 
-# Provide access to the agent.tar.gz on the leader via an nginx site
+# Provide access to the agent.tar.gz on the leader via an nginx site.
 template "/etc/nginx/sites-available/opscenter" do
   source "opscenter_nginx_site.erb"
+  notifies :reload, "service[nginx]", :immediately
 end
 
-# Link the site to enabled.
+# Link the site to enabled access and reload.
 link "/etc/nginx/sites-enabled/opscenter" do
   to "/etc/nginx/sites-available/opscenter"
+  notifies :reload, "service[nginx]", :immediately
 end
 
-# Reload nginx to pick it up.
-service "nginx" do
-  action :reload
-end

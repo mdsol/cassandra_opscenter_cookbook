@@ -34,7 +34,7 @@ Requirements
 * Cassandra on each node.
 * Python cookbook to run the server.
 * Java cookbook to run the agent (on each node including the elected server).
-* Nginx cookbook for agent distribution on the elected server.
+* Nginx for agent distribution on the elected server.
 
 ## Platform
 

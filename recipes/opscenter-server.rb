@@ -111,11 +111,12 @@ end
 # Provide access to the agent.tar.gz on the leader via an nginx site.
 template "/etc/nginx/sites-available/opscenter" do
   source "opscenter_nginx_site.erb"
+  mode    0644
   notifies :create, "link[/etc/nginx/sites-enabled/opscenter]", :immediately
   notifies :restart, "service[nginx]", :immediately
 end
 
-# Link the site to enabled access and reload.
+# Link the site to enabled access
 link "/etc/nginx/sites-enabled/opscenter" do
   to "/etc/nginx/sites-available/opscenter"
 end

@@ -34,6 +34,7 @@ bash "Opscenter Agent Installation" do
   EOH
   not_if "dpkg -l opscenter-agent | grep #{node[:cassandra][:opscenter][:version]} && grep #{$LEADEREC2PUBLICHOSTNAME} /var/lib/opscenter-agent/conf/address.yaml"
   notifies :create, "template[/var/lib/opscenter-agent/conf/address.yaml]", :immediately
+  notifies :restart, "service[opscenter-agent]", :immediately
 end
 
 # Opscenter Agent configuration - differs between single and multi region setups

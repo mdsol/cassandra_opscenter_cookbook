@@ -2,7 +2,7 @@
 # External variables
 
 # The default is too small for a typical ec2 hostname - this needs to be set above 32
-default[:nginx][:server_names_hash_bucket_size] = 64
+default[:nginx][:server_names_hash_bucket_size] = 512 
 
 ###
 # Cassandra variables

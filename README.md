@@ -63,6 +63,14 @@ Include cassandra-opscenter in your runlist.
 
 Once this cookbook is deployed and the nodes converged, and you have set connectivity through whatever firewalls/security groups you have you should be able to reach Server's webserver on its public ip on port 8888.
 
+#### multiregion requires the following attribute be set:
+
+```JSON
+"cassandra": {
+  "multiregion": "true"
+}
+```
+
 Development
 ===========
 

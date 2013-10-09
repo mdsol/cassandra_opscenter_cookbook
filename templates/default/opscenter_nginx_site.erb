@@ -9,9 +9,9 @@ server {
   # Allow access to the agent in the opscenter directory
   location /agent.tar.gz { root <%= node[:cassandra][:opscenter][:home] %>-<%= node[:cassandra][:opscenter][:version] %> ; }
 
-  # Proxy all requests to http://<%= node[:ipaddress] %>:<%= node[:cassandra][:opscenter][:server_port] %>;
+  # Redirect all requests to http://<%= node[:ipaddress] %>:<%= node[:cassandra][:opscenter][:server_port] %>;
   location / {
-    proxy_pass http://<%= node[:ipaddress] %>:<%= node[:cassandra][:opscenter][:server_port] %>;
+    rewrite ^ http://<%= node[:ec2][:public_hostname] %>:<%= node[:cassandra][:opscenter][:server_port] %>$request_uri? permanent;
   }
 
 }

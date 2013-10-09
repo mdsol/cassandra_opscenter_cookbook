@@ -11,7 +11,9 @@ To get around needing to know this/manage in an automated manner a leadership el
 
 The good news is that Opscenter stores its data within Cassandra itself in its own Keyspace (2 replicas) so if a leader is terminated and a new leader arises from the ashes, no data should be lost.
 
-This cookbook supports two modes of deployment - multiregion OR non-multiregion, set through attributes. We default to non-multiregion aka singleregion. The way multiregion is expressed is in a difference in the agent's address configuration.
+This cookbook supports two modes of deployment - multiregion OR non-multiregion, set through attributes. We default to non-multiregion aka singleregion. The way multiregion is expressed is in a difference in the agent's address configuration. Check the attributes for how to set this.
+
+This cookbook deploys the tarball version of opscenter because the packages provided tend to install as root, whereas this cookbook installs/runs opscenter as a unique system user.
 
 This cookbook holds certain assumptions to be true in order to easily manage its deployment:
 

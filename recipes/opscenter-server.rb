@@ -1,8 +1,5 @@
 Chef::Log.info("Installing Opscenter Server")
 
-# Install nginx
-include_recipe "nginx"
-
 # Install python
 include_recipe "python"
 
@@ -97,14 +94,23 @@ ruby_block "Save Opscenter Agent Checksum" do
   end
 end
 
-# Provide access to the agent.tar.gz on the leader via http/https
+# Instal nginx - the cookbook would be better.
+package "nginx"
+
+# Start nginx
+service "nginx" do
+  supports :restart => true, :reload => true
+  action   :enable
+end
+
+# Provide access to the agent.tar.gz on the leader via an nginx site
 template "/etc/nginx/sites-available/opscenter" do
   source "opscenter_nginx_site.erb"
 end
 
-# Enable the site.
-nginx_site "opscenter" do
-  enable opscenter
+# Link the site to enabled.
+link "/etc/nginx/sites-enabled/opscenter" do
+  to "/etc/nginx/sites-available/opscenter"
 end
 
 # Reload nginx to pick it up.

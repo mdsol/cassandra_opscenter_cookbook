@@ -3,15 +3,15 @@
 server {
   listen 80 default;
   server_name <%= node[:ec2][:public_hostname] %>;
-  access_log <%= node[:nginx][:log_dir] %>/opscenter.access.log;
-  error_log <%= node[:nginx][:log_dir] %>/opscenter.error.log warn;
+  access_log /var/log/nginx/opscenter.access.log;
+  error_log /var/log/nginx/opscenter.error.log warn;
 
   # Allow access to the agent in the opscenter directory
   location /agent.tar.gz { root <%= node[:cassandra][:opscenter][:home] %>-<%= node[:cassandra][:opscenter][:version] %> ; }
 
-  # Proxy all requests to http://<%= #{node[:ipaddress]} %>:<%= node[:cassandra][:opscenter][:server_port] %>;
+  # Proxy all requests to http://<%= node[:ipaddress] %>:<%= node[:cassandra][:opscenter][:server_port] %>;
   location / {
-    proxy_pass http://<%= #{node[:ipaddress]} %>:<%= node[:cassandra][:opscenter][:server_port] %>;
+    proxy_pass http://<%= node[:ipaddress] %>:<%= node[:cassandra][:opscenter][:server_port] %>;
   }
 
 }

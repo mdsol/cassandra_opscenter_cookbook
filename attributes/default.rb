@@ -1,5 +1,17 @@
+###
+# External variables
+
+# The default is too small for a typical ec2 hostname - this needs to be set above 32
+default[:nginx][:server_names_hash_bucket_size] = 64
+
+###
+# Cassandra variables
+
 # Multi region switch variable: in this cookbook the agent config is different depending on this variable.
 default[:cassandra][:multiregion] = "false"
+
+###
+# Opscenter variables
 
 # We will create this user on the leader-elected server.
 default[:cassandra][:opscenter][:user] = "opscenter"

@@ -1,5 +1,8 @@
 # nginx site for opscenter - Managed by Chef - do not edit directly!
 
+# the size of the public hostname can be too large for the default size of 32;
+server_names_hash_bucket_size <%= node[:nginx][:server_names_hash_bucket_size] %>;
+
 server {
   listen 80 default;
   server_name <%= node[:ec2][:public_hostname] %>;

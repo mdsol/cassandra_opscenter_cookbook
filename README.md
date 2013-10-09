@@ -17,14 +17,14 @@ This cookbook deploys the tarball version of opscenter because the packages prov
 
 This cookbook holds certain assumptions to be true in order to easily manage its deployment:
 
-### A) You are deploying this on EC2
-#### Reason: This cookbook was developed on/designed for EC2 deployment. If you want to support non-EC2 deployment please submit patches.
+##### A) You are deploying this on EC2
+###### Reason: This cookbook was developed on/designed for EC2 deployment. If you want to support non-EC2 deployment please submit patches.
 
-### B) All members of the cluster share the same UNIQUE chef role and this is the first role in the list of roles. i.e. cassandra-cluster-one or product-production-casdb.
-#### Reason: The unique role is used to search for other cluster members for shared information. If you want to extend/improve this please submit patches.
+##### B) All members of the cluster share the same UNIQUE chef role and this is the first role in the list of roles. i.e. cassandra-cluster-one or product-production-casdb.
+###### Reason: The unique role is used to search for other cluster members for shared information. If you want to extend/improve this please submit patches.
 
-### C) Connectivity between cluster members is suffiently open to allow for agent distribution and agent connectivity. Typically you should have a security group that allows relatively open access from that security group.
-#### Reason: Nothing will work without connectivity anyway. No node is an island.
+##### C) Connectivity between cluster members is suffiently open to allow for agent distribution and agent connectivity. Typically you should have a security group that allows relatively open access from that security group.
+###### Reason: Nothing will work without connectivity anyway. No node is an island.
 
 [1]: http://planetcassandra.org/Download/DataStaxCommunityEdition
 

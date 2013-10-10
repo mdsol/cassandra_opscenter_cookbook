@@ -26,7 +26,7 @@ This cookbook holds certain assumptions to be true in order to easily manage its
 ##### C) Connectivity between cluster members is suffiently open to allow for agent distribution and agent connectivity. Typically you should have a security group that allows relatively open access from that security group.
 ###### Reason: Nothing will work without connectivity anyway. No node is an island.
 
-[1]: http://planetcassandra.org/Download/DataStaxCommunityEdition
+[1]: http://www.datastax.com/what-we-offer/products-services/datastax-opscenter
 
 Requirements
 ============
@@ -78,8 +78,8 @@ See the [Github page][2]
 
 [2]: https://github.com/mdsol/cassandra_opscenter_cookbook
 
-License and Authors
-===================
+Authors
+=======
 
 * Author: Alex Trull <atrull@mdsol.com>
 * Author: Benton Roberts <broberts@mdsol.com>

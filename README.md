@@ -72,8 +72,10 @@ In the next dialogue box add the hostname you have connected to the cluster list
 #### multiregion requires the following attribute be set - this is from the cassandra-priam cookbook, but would work for non-priam deployments of opscenter and cassandra:
 
 ```JSON
-"cassandra": {
-  "priam_multiregion_enable": "true"
+{
+  "cassandra": {
+    "priam_multiregion_enable": "true"
+  }
 }
 ```
 

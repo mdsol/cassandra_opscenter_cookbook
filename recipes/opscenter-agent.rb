@@ -38,7 +38,8 @@ bash "Opscenter Agent Installation" do
 end
 
 # Opscenter Agent configuration - differs between single and multi region setups
-if node[:cassandra][:multiregion] =~ /true/
+case node[:cassandra][:multiregion]
+when "enabled", "true"
   template "/var/lib/opscenter-agent/conf/address.yaml" do
     variables :LEADEREC2PUBLICHOSTNAME => $LEADEREC2PUBLICHOSTNAME
     source "multiregion-address.yaml.erb"

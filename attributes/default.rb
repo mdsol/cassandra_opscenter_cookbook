@@ -8,7 +8,8 @@ override[:nginx][:server_names_hash_bucket_size] = 512
 # Cassandra variables
 
 # Multi region switch variable: in this cookbook the agent config is different depending on this variable.
-default[:cassandra][:multiregion] = "disabled"
+# We use the variable from the cassandra-priam cookbook, which this cookbook was written alongside.
+default[:cassandra][:priam_multiregion_enable] = nil
 
 ###
 # Opscenter variables

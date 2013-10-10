@@ -23,7 +23,7 @@ This cookbook holds certain assumptions to be true in order to easily manage its
 ##### B) All members of the cluster share the same UNIQUE chef role and this is the first role in the list of roles. i.e. cassandra-cluster-one or product-production-casdb.
 ###### Reason: The unique role is used to search for other cluster members for shared information. If you want to extend/improve this please submit patches.
 
-##### C) Connectivity between cluster members is suffiently open to allow for agent distribution and agent connectivity. Typically you should have a security group that allows relatively open access from that security group.
+##### C) Connectivity between cluster members is suffiently open to allow for agent distribution and agent connectivity. Typically you should have a security group that allows relatively open access from that security group on port 80 for agent distrubtion.
 ###### Reason: Nothing will work without connectivity anyway. No node is an island.
 
 [1]: http://www.datastax.com/what-we-offer/products-services/datastax-opscenter
@@ -61,13 +61,19 @@ Usage
 
 Include cassandra-opscenter in your runlist.
 
-Once this cookbook is deployed and the nodes converged, and you have set connectivity through whatever firewalls/security groups you have you should be able to reach Server's webserver on its public ip on port 8888.
+Ensure you have enough connectivity between cluster members so that the agent can be distributed. (over the http port)
 
-#### multiregion requires the following attribute be set:
+Once this cookbook is deployed and the nodes converged, login to the cluster member with the lowest alphanumeric node.name on port 8888
+
+Click 'Use Existing Cluster' in the dialogue box.
+
+In the next dialogue box add the hostname you have connected to the cluster list and click 'Save Cluster'.
+
+#### multiregion requires the following attribute be set - this is from the cassandra-priam cookbook, but would work for non-priam deployments of opscenter and cassandra:
 
 ```JSON
 "cassandra": {
-  "multiregion": "true"
+  "priam_multiregion_enable": "true"
 }
 ```
 
